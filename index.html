@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#f6f3ee" />
+  <title>Daily Planner · To-Do List</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <main class="app">
+
+    <!-- HEADER: Profile + Time -->
+    <header class="top">
+      <section class="card profile" aria-label="Profil">
+        <div class="avatar" id="avatar" aria-hidden="true">?</div>
+        <div class="profile-text">
+          <p class="eyebrow">Selamat datang</p>
+          <h1 id="profileName">—</h1>
+          <p class="role" id="profileRole">—</p>
+        </div>
+        <button class="icon-btn" id="editProfileBtn" type="button" aria-label="Ubah profil" title="Ubah profil">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
+        </button>
+      </section>
+
+      <section class="card clock" aria-label="Waktu">
+        <p class="eyebrow">Hari ini</p>
+        <p class="day" id="clockDay">—</p>
+        <p class="date" id="clockDate">—</p>
+        <p class="time" id="clockTime">--.--.--</p>
+      </section>
+    </header>
+
+    <!-- FORM -->
+    <section class="card composer" aria-label="Tambah tugas">
+      <h2>Tugas baru</h2>
+      <form id="taskForm" novalidate>
+        <label class="field">
+          <span class="label">Apa yang ingin dikerjakan?</span>
+          <textarea id="taskText" rows="3" maxlength="200" placeholder="Tulis tugasmu di sini…" required></textarea>
+          <small class="error" id="taskError" role="alert" hidden>Tugas tidak boleh kosong.</small>
+        </label>
+
+        <div class="row">
+          <fieldset class="field priority">
+            <legend class="label">Level prioritas</legend>
+            <div class="segmented">
+              <label><input type="radio" name="priority" value="low" /><span class="seg low">Low</span></label>
+              <label><input type="radio" name="priority" value="medium" checked /><span class="seg medium">Medium</span></label>
+              <label><input type="radio" name="priority" value="high" /><span class="seg high">High</span></label>
+            </div>
+          </fieldset>
+
+          <label class="field due">
+            <span class="label">Tanggal</span>
+            <input type="date" id="taskDate" required />
+          </label>
+        </div>
+
+        <button type="submit" class="btn primary">Submit</button>
+      </form>
+    </section>
+
+    <!-- FILTERS -->
+    <section class="filters" aria-label="Filter daftar">
+      <div class="chips" role="group" aria-label="Tampilkan">
+        <button type="button" class="chip" data-filter="all">Semua</button>
+        <button type="button" class="chip" data-filter="today">Hari ini</button>
+        <button type="button" class="chip chip-late" data-filter="overdue">Terlambat <b id="overdueCount">0</b></button>
+      </div>
+      <label class="pick-day">
+        <span>Pilih hari</span>
+        <input type="date" id="filterDate" />
+      </label>
+    </section>
+
+    <!-- LISTS -->
+    <div class="columns">
+      <section class="card column" aria-labelledby="todoTitle">
+        <div class="column-head">
+          <h2 id="todoTitle">To Do <span class="count" id="todoCount">0</span></h2>
+          <button type="button" class="btn danger small" id="deleteAllBtn">Delete All</button>
+        </div>
+        <p class="hint" id="filterInfo"></p>
+        <ul class="list" id="todoList"></ul>
+        <p class="empty" id="todoEmpty" hidden>Belum ada tugas. Mulai dengan menulis satu di atas.</p>
+      </section>
+
+      <section class="card column" aria-labelledby="doneTitle">
+        <div class="column-head">
+          <h2 id="doneTitle">Done <span class="count" id="doneCount">0</span></h2>
+        </div>
+        <ul class="list" id="doneList"></ul>
+        <p class="empty" id="doneEmpty" hidden>Tugas yang selesai akan muncul di sini.</p>
+      </section>
+    </div>
+
+    <footer class="foot">Data tersimpan otomatis di perangkatmu.</footer>
+  </main>
+
+  <!-- Profile dialog -->
+  <dialog id="profileDialog">
+    <form id="profileForm" method="dialog" novalidate>
+      <h2>Kenalan dulu</h2>
+      <p class="hint">Isi profilmu agar aplikasi mengenalimu.</p>
+      <label class="field">
+        <span class="label">Nama</span>
+        <input type="text" id="inputName" maxlength="40" placeholder="Nama lengkap" required />
+      </label>
+      <label class="field">
+        <span class="label">Jabatan</span>
+        <input type="text" id="inputRole" maxlength="50" placeholder="Contoh: Web Developer" required />
+      </label>
+      <small class="error" id="profileError" role="alert" hidden>Nama dan jabatan wajib diisi.</small>
+      <div class="dialog-actions">
+        <button type="button" class="btn ghost" id="profileCancel" hidden>Batal</button>
+        <button type="submit" class="btn primary">Simpan</button>
+      </div>
+    </form>
+  </dialog>
+
+  <!-- Confirm dialog -->
+  <dialog id="confirmDialog">
+    <form method="dialog">
+      <h2>Hapus semua tugas?</h2>
+      <p class="hint">Seluruh daftar To Do dan Done akan dihapus dan tidak bisa dikembalikan.</p>
+      <div class="dialog-actions">
+        <button type="submit" value="cancel" class="btn ghost">Batal</button>
+        <button type="submit" value="ok" class="btn danger">Ya, hapus semua</button>
+      </div>
+    </form>
+  </dialog>
+
+  <script src="script.js"></script>
+</body>
+</html>
